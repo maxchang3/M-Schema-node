@@ -35,14 +35,13 @@ export class SchemaEngine {
     }
 
     initTables(schema: string | undefined) {
-        const allTables = Array.from(
+        // We don't consider `include_tables` and `exclude_tables` in this case
+        this.usableTables = Array.from(
             new Set([
                 ...this.getTableNames(schema),
                 ...this.getViewNames(schema),
             ])
         )
-        // We don't consider `include_tables` and `exclude_tables` in this case
-        this.usableTables = allTables
 
         // If a schema is specified, filter tables by that schema
         if (schema) {
