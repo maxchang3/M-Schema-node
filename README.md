@@ -13,7 +13,7 @@ Please visit the [original repository](https://github.com/XGenerationLab/M-Schem
 
 ## Design Notes
 
-- Currently, this project is not intended to be a library, just like the original M-Schema implementation.. You can copy the code and use it in your own projects.
+- Currently, this project is not intended to be a library, just like the original M-Schema implementation. You can copy the code and use it in your own projects.
 - The original M-Schema implementation uses [LlamaIndex](https://github.com/run-llama/llama_index)’s `SQLDatabase`, which is a wrapper of [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy).
   - I use `better-sqlite3` for database interactions and replicate some of SQLAlchemy’s `inspect` functionality using basic SQL queries. For reference, I consulted the [SQLAlchemy SQLite dialect code](https://github.com/sqlalchemy/sqlalchemy/blob/main/lib/sqlalchemy/dialects/sqlite/base.py).
 - Some of the code was initially converted with the assistance of LLMs.
@@ -34,7 +34,7 @@ pnpm start
 
 ### Quick Start
 
-Connect to the database
+1. Connect to the database
 
 ```ts
 import Database from 'better-sqlite3'
@@ -43,7 +43,7 @@ const dbName = 'aan_1'
 const db = new Database('./M-Schema/aan_1.sqlite')
 ```
 
-Construct M-Schema
+2. Construct M-Schema
 
 ```ts
 const schemaEngine = new SchemaEngine(db, dbName)
@@ -53,7 +53,7 @@ const mschemaStr = mschema.toMSchema()
 mschema.save(f'./{db_name}.json')
 ```
 
-Use for Text-to-SQL.
+3. Use for Text-to-SQL
 
 ```ts
 const dialect = 'sqlite'
