@@ -20,42 +20,34 @@ export function isEmail(string: string): boolean {
 }
 
 export function examplesToStr(examples: any[]): string[] {
-    let values: any[] = []
-    let shouldBreak = false
+    const values: any[] = []
+
     for (const element of examples) {
-        if (shouldBreak) break
-
-        let current = element
-
-        if (current instanceof Date) {
-            values = [current]
-            shouldBreak = true
-            break
+        if (element instanceof Date) {
+            return [element.toISOString()]
         }
 
-        if (typeof current === 'number') {
-            current = current.toString()
+        if (typeof element === 'number') {
+            values.push(element.toString())
+            continue
         }
 
-        if (typeof current === 'string' && isEmail(current)) {
-            values = []
-            shouldBreak = true
-            break
+        if (typeof element === 'string') {
+            if (
+                isEmail(element) ||
+                element.startsWith('http://') ||
+                element.startsWith('https://')
+            ) {
+                return []
+            }
+            values.push(element)
+            continue
         }
 
-        if (
-            typeof current === 'string' &&
-            (current.includes('http://') || current.includes('https://'))
-        ) {
-            values = []
-            shouldBreak = true
-            break
-        }
-
-        if (current != null) {
-            values.push(current)
+        if (element != null) {
+            values.push(element)
         }
     }
 
-    return values.map((v) => String(v)).filter((s) => s.length > 0)
+    return values.map(String).filter((s) => s.trim().length > 0)
 }
