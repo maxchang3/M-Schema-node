@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "m-schema-node",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "author": "maxchang3",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "lint": "biome check",
+    "lint:fix": "biome check --write .",
+    "start": "tsx src/example.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@maxchang/biome-config": "^0.0.3",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.14.0",
+    "tsx": "^4.19.3"
+  },
+  "packageManager": "pnpm@10.8.0",
+  "dependencies": {
+    "better-sqlite3": "^11.9.1"
+  }
+}
