@@ -43,8 +43,8 @@ export class SchemaEngine {
     initTables(schema: string | undefined) {
         const allTables = Array.from(
             new Set([
-                ...this.#getTableNames(schema),
-                ...this.#getViewNames(schema),
+                ...this.getTableNames(schema),
+                ...this.getViewNames(schema),
             ])
         )
         // We don't consider `include_tables` and `exclude_tables` in this case
@@ -63,7 +63,7 @@ export class SchemaEngine {
             const allTables: string[] = []
             // Iterate through all available schemas
             for (const s of this.getSchemaNames()) {
-                const schemaTables = this.#getTableNames(s)
+                const schemaTables = this.getTableNames(s)
                 allTables.push(...schemaTables)
                 // Store the schema for each table
                 for (const table of schemaTables) {
@@ -108,7 +108,7 @@ export class SchemaEngine {
         return query
     }
 
-    #getViewNames(
+    getViewNames(
         schema: string | undefined,
         includeInternal = false
     ): string[] {
@@ -151,7 +151,7 @@ export class SchemaEngine {
     }
 
     // Get table names for a specific schema
-    #getTableNames(schema?: string, includeInternal = false): string[] {
+    getTableNames(schema?: string, includeInternal = false): string[] {
         // For SQLite, schema is ignored as it has only one schema
         // Build the query based on whether to include internal tables
         const query = this.#sqliteMainQuery(
