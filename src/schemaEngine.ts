@@ -78,10 +78,7 @@ export class SchemaEngine {
         return `"${identifier.replace(/"/g, '""')}"`
     }
 
-    #format_schema(
-        schema: string | null | undefined,
-        tableName: string
-    ): string {
+    #format_schema(schema: string | undefined, tableName: string): string {
         if (schema !== null && schema !== undefined) {
             // Quote the schema identifier to handle special characters
             const qschema = this.#quoteIdentifier(schema)
@@ -94,8 +91,8 @@ export class SchemaEngine {
     #sqliteMainQuery(
         table: string,
         type: string,
-        schema: string | undefined,
-        sqlite_include_internal: boolean
+        schema?: string,
+        sqlite_include_internal = false
     ) {
         const main = this.#format_schema(schema, table)
         const filter_table = !sqlite_include_internal
@@ -108,10 +105,7 @@ export class SchemaEngine {
         return query
     }
 
-    getViewNames(
-        schema: string | undefined,
-        includeInternal = false
-    ): string[] {
+    getViewNames(schema?: string, includeInternal = false): string[] {
         const query = this.#sqliteMainQuery(
             'sqlite_master',
             'view',
