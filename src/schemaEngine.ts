@@ -2,12 +2,6 @@ import type Database from 'better-sqlite3'
 import { MSchema } from './mSchema'
 import { examplesToStr } from './utils'
 
-type TableInfo = {
-    name: string
-    schema: string | null
-    comment: string | null
-}
-
 type ColumnInfo = {
     name: string
     type: string
