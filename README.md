@@ -16,6 +16,7 @@ Please visit the [original repository](https://github.com/XGenerationLab/M-Schem
 - Currently, this project is not intended to be a library, just like the original M-Schema implementation. You can copy the code and use it in your own projects.
 - The original M-Schema implementation uses [LlamaIndex](https://github.com/run-llama/llama_index)’s `SQLDatabase`, which is a wrapper of [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy).
   - I use `better-sqlite3` for database interactions and replicate some of SQLAlchemy’s `inspect` functionality using basic SQL queries. For reference, I consulted the [SQLAlchemy SQLite dialect code](https://github.com/sqlalchemy/sqlalchemy/blob/main/lib/sqlalchemy/dialects/sqlite/base.py).
+  - Due to there is no direct equivalent of SQLAlchemy, **current only SQLite is supported**.
 - Some of the code was initially converted with the assistance of LLMs.
 
 ## Usage
