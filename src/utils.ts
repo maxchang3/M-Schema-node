@@ -1,4 +1,4 @@
-import * as fs from 'node:fs'
+import fs from 'node:fs'
 
 export function writeJson(path: string, data: any) {
     fs.writeFileSync(path, JSON.stringify(data, null, 2), 'utf-8')
