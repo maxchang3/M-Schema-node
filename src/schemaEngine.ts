@@ -32,11 +32,7 @@ export class SchemaEngine {
     dialect = 'sqlite'
     dbName: string
 
-    constructor(
-        db: Database.Database,
-        dbName = 'Anonymous',
-        schema: string | null = null
-    ) {
+    constructor(db: Database.Database, dbName = 'Anonymous', schema?: string) {
         this.db = db
         this.dbName = dbName
         this.mschema = new MSchema(dbName, schema)
@@ -44,51 +40,88 @@ export class SchemaEngine {
         this.initMSchema()
     }
 
-    initTables(schema: string | null) {
-        const tables = this.db
-            .prepare(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-            )
-            .all() as TableInfo[]
+    initTables(schema: string | undefined) {
+        const allTables = Array.from(
+            new Set([
+                ...this.#getTableNames(schema),
+                ...this.#getViewNames(schema),
+            ])
+        )
+        // We don't consider `include_tables` and `exclude_tables` in this case
+        this.usableTables = allTables
 
+        // If a schema is specified, filter tables by that schema
         if (schema) {
-            // If a schema is specified, filter tables by that schema
-            this.usableTables = tables
-                .map((t) => t.name)
-                .filter((tableName) => this.hasTable(tableName, schema))
-
+            this.usableTables = this.usableTables.filter((table) =>
+                this.hasTable(table, schema)
+            )
             // Store the specified schema for each table
             for (const tableName of this.usableTables) {
                 this.tablesSchemas[tableName] = schema
             }
         } else {
-            // If no schema is specified, collect tables from all available schemas
             const allTables: string[] = []
-
             // Iterate through all available schemas
-            const schemas = this.getSchemaNames()
-            for (const s of schemas) {
-                const schemaTables = this.getTableNames(s)
+            for (const s of this.getSchemaNames()) {
+                const schemaTables = this.#getTableNames(s)
                 allTables.push(...schemaTables)
-
                 // Store the schema for each table
                 for (const table of schemaTables) {
                     this.tablesSchemas[table] = s
                 }
             }
-
-            this.usableTables =
-                allTables.length > 0 ? allTables : tables.map((t) => t.name)
-
-            // If no schemas were found or we couldn't get tables by schema,
-            // use the default empty schema for all tables
-            if (allTables.length === 0) {
-                for (const tableName of this.usableTables) {
-                    this.tablesSchemas[tableName] = ''
-                }
-            }
+            this.usableTables = allTables
         }
     }
+
+    #quoteIdentifier(identifier: string) {
+        return `"${identifier.replace(/"/g, '""')}"`
+    }
+
+    #format_schema(
+        schema: string | null | undefined,
+        tableName: string
+    ): string {
+        if (schema !== null && schema !== undefined) {
+            // Quote the schema identifier to handle special characters
+            const qschema = this.#quoteIdentifier(schema)
+            return `${qschema}.${tableName}`
+        }
+        return tableName
+    }
+
+    // From SqlAlchemy
+    #sqliteMainQuery(
+        table: string,
+        type: string,
+        schema: string | undefined,
+        sqlite_include_internal: boolean
+    ) {
+        const main = this.#format_schema(schema, table)
+        const filter_table = !sqlite_include_internal
+            ? " AND name NOT LIKE 'sqlite~_%' ESCAPE '~'"
+            : ''
+        const query =
+            `SELECT name FROM ${main} ` +
+            `WHERE type='${type}'${filter_table} ` +
+            'ORDER BY name'
+        return query
+    }
+
+    #getViewNames(
+        schema: string | undefined,
+        includeInternal = false
+    ): string[] {
+        const query = this.#sqliteMainQuery(
+            'sqlite_master',
+            'view',
+            schema,
+            includeInternal
+        )
+        const result = this.db.prepare(query).all() as { name: string }[]
+        return result.map((r) => r.name)
+    }
+
     hasTable(tableName: string, schema: string): boolean {
         if (!this.getSchemaNames().includes(schema)) return false
         // Query the database to check if the table exists
@@ -118,12 +151,15 @@ export class SchemaEngine {
     }
 
     // Get table names for a specific schema
-    getTableNames(schema: string, includeInternal = false): string[] {
+    #getTableNames(schema?: string, includeInternal = false): string[] {
         // For SQLite, schema is ignored as it has only one schema
         // Build the query based on whether to include internal tables
-        const query = includeInternal
-            ? "SELECT name FROM sqlite_master WHERE type='table'"
-            : "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        const query = this.#sqliteMainQuery(
+            'sqlite_master',
+            'table',
+            schema,
+            includeInternal
+        )
         return this.db
             .prepare(query)
             .all()
