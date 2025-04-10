@@ -1,19 +1,19 @@
 import * as fs from 'node:fs'
 
-export function writeJson(path: string, data: any): void {
+export function writeJson(path: string, data: any) {
     fs.writeFileSync(path, JSON.stringify(data, null, 2), 'utf-8')
 }
 
-export function readJson(path: string): any {
+export function readJson(path: string) {
     const rawData = fs.readFileSync(path, 'utf-8')
     return JSON.parse(rawData)
 }
 
-export function saveJson(targetFile: string, js: any, indent = 4): void {
+export function saveJson(targetFile: string, js: any, indent = 4) {
     fs.writeFileSync(targetFile, JSON.stringify(js, null, indent), 'utf-8')
 }
 
-export function isEmail(string: string): boolean {
+export function isEmail(string: string) {
     const pattern = /^[\w\.-]+@[\w\.-]+\.\w+$/
     const match = string.match(pattern)
     return !!match

@@ -33,7 +33,7 @@ export class MSchema {
         name: string,
         fields: Record<string, FieldInfo> = {},
         comment: string | null = null
-    ): void {
+    ) {
         this.tables[name] = { fields: { ...fields }, examples: [], comment }
     }
 
@@ -47,7 +47,7 @@ export class MSchema {
         autoincrement = false,
         comment = '',
         examples: string[] = []
-    ): void {
+    ) {
         this.tables[tableName].fields[fieldName] = {
             type: fieldType,
             primary_key,
@@ -65,7 +65,7 @@ export class MSchema {
         refSchema: string,
         refTableName: string,
         refFieldName: string
-    ): void {
+    ) {
         this.foreignKeys.push([
             tableName,
             fieldName,
@@ -288,12 +288,12 @@ export class MSchema {
         }
     }
 
-    save(filePath: string): void {
+    save(filePath: string) {
         const schemaDict = this.dump()
         writeJson(filePath, schemaDict)
     }
 
-    load(filePath: string): void {
+    load(filePath: string) {
         const data = readJson(filePath)
         this.dbId = data.db_id || 'Anonymous'
         this.schema = data.schema || null

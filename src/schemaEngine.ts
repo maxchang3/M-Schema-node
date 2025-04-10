@@ -44,7 +44,7 @@ export class SchemaEngine {
         this.initMSchema()
     }
 
-    initTables(schema: string | null): void {
+    initTables(schema: string | null) {
         const tables = this.db
             .prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
@@ -208,7 +208,7 @@ export class SchemaEngine {
         }
     }
 
-    initMSchema(): void {
+    initMSchema() {
         for (const tableName of this.usableTables) {
             const tableComment = this.getTableComment(tableName)
             const schema = this.tablesSchemas[tableName] || ''
