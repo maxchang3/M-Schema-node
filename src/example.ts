@@ -5,12 +5,7 @@ import { SchemaEngine } from './schemaEngine'
 
 // 1. Connect to the database
 const dbName = 'aan_1'
-const dbPath = path.join(
-    path.dirname(new URL(import.meta.url).pathname),
-    '..',
-    'M-Schema',
-    `${dbName}.sqlite`
-)
+const dbPath = path.join('M-Schema', `${dbName}.sqlite`)
 
 // Check if the database file exists
 if (!fs.existsSync(dbPath)) {
